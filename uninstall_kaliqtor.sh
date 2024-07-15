@@ -28,3 +28,7 @@ if grep -q "$USER_DIR" $ZPROFILE; then
 else
   echo "$USER_DIR was not found in PATH."
 fi
+
+# Source the .zprofile to apply changes
+source $ZPROFILE
+echo "The PATH has been updated."
