@@ -24,4 +24,6 @@ else
   echo "$USER_DIR is already in PATH."
 fi
 
-echo "Script downloaded and made executable at $USER_DIR/$SCRIPT_NAME"
+# Source the .zprofile to apply changes
+source $ZPROFILE
+echo "Script downloaded and made executable at $USER_DIR/$SCRIPT_NAME. The PATH has been updated."
