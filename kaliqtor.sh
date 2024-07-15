@@ -2,6 +2,12 @@
 
 set -e
 
+# program information
+readonly prog_name="kaliqtor"
+readonly version="0.1"
+readonly signature="Copyright (C) 2024 M3ro20j1"
+readonly git_url="https://github.com/M3ro20j1/kaliqtor"
+
 # Configuration variables
 LAN_RANGE="192.168.0.0/16"
 SSH_PORT=22
@@ -29,6 +35,23 @@ print_message() {
       echo "$message"
       ;;
   esac
+}
+
+# Function to display banner with program information
+banner() {
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓█▓▒░░▒▓██████▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░ "
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ "
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ "
+  print_message "red" "░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░  "
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ "
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ "
+  print_message "red" "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░░▒▓██████▓▒░  ░▒▓█▓▒░   ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+  print_message "red" "                                                ░▒▓█▓▒░                                          "
+  print_message "red" "                                                 ░▒▓██▓▒░                                        "
+  print_message "red" "================================================================================================ "
+  print_message "green" "Program Name : $prog_name   Version : $version"
+  print_message "green" "Signature : $signature   Git URL : $git_url"
+  print_message "green" "================================================================================================ "
 }
 
 # Ensure jq is installed
@@ -214,20 +237,6 @@ stop_tor_proxy() {
   sudo iptables -P OUTPUT ACCEPT
 }
 
-# Function to display help
-show_help() {
-  echo "Usage: $0 [OPTION]"
-  echo "Options:"
-  echo "  c    Connect to Tor and check for leaks using proxychains"
-  echo "  t    Test for leaks using proxychains without starting Tor"
-  echo "  tp   Test for leaks in transparent proxy mode without proxychains"
-  echo "  d    Disconnect Tor and display public IP"
-  echo "  ap   Activate transparent proxy through Tor and check for leaks without proxychains"
-  echo "  dp   Deactivate transparent proxy through Tor"
-  echo "  i    Tasks using external network or tor via proxchains"
-  echo "  h    Display this help message"
-}
-
 # Function to check for applications using external network
 check_external_network_usage() {
   print_message "blue" "Checking for applications using external network..."
@@ -313,6 +322,128 @@ check_tor_network_usage_info() {
   fi
 }
 
+# Function to disable IPv6 in GRUB
+disable_ipv6_grub() {
+  local grub_config="/etc/default/grub"
+  local grub_backup="/etc/default/grub.bak"
+
+  # Create a backup of the current GRUB configuration
+  sudo cp $grub_config $grub_backup
+  print_message "yellow" "Backup of GRUB configuration created at $grub_backup"
+
+  # Function to add ipv6.disable=1 if not already present
+  add_ipv6_disable() {
+    local line=$1
+    if [[ $line != *"ipv6.disable=1"* ]]; then
+      echo "$line ipv6.disable=1"
+    else
+      echo "$line"
+    fi
+  }
+
+  # Modify GRUB_CMDLINE_LINUX_DEFAULT
+  local current_default=$(grep "^GRUB_CMDLINE_LINUX_DEFAULT=" $grub_config)
+  local new_default=$(add_ipv6_disable "$current_default")
+  sudo sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|$new_default|" $grub_config
+
+  # Modify GRUB_CMDLINE_LINUX
+  local current_linux=$(grep "^GRUB_CMDLINE_LINUX=" $grub_config)
+  local new_linux=$(add_ipv6_disable "$current_linux")
+  sudo sed -i "s|^GRUB_CMDLINE_LINUX=.*|$new_linux|" $grub_config
+
+  print_message "green" "IPv6 disabled in GRUB configuration."
+
+  # Update GRUB
+  sudo update-grub
+  print_message "blue" "GRUB configuration updated. Please reboot your system for the changes to take effect."
+}
+
+# Function to enable IPv6 in GRUB
+enable_ipv6_grub() {
+  local grub_config="/etc/default/grub"
+  local grub_backup="/etc/default/grub.bak"
+
+  # Create a backup of the current GRUB configuration
+  sudo cp $grub_config $grub_backup
+  print_message "yellow" "Backup of GRUB configuration created at $grub_backup"
+
+  # Function to remove ipv6.disable=1 if present
+  remove_ipv6_disable() {
+    local line=$1
+    echo "$line" | sed 's/ipv6\.disable=1//g'
+  }
+
+  # Modify GRUB_CMDLINE_LINUX_DEFAULT
+  local current_default=$(grep "^GRUB_CMDLINE_LINUX_DEFAULT=" $grub_config)
+  local new_default=$(remove_ipv6_disable "$current_default")
+  sudo sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|$new_default|" $grub_config
+
+  # Modify GRUB_CMDLINE_LINUX
+  local current_linux=$(grep "^GRUB_CMDLINE_LINUX=" $grub_config)
+  local new_linux=$(remove_ipv6_disable "$current_linux")
+  sudo sed -i "s|^GRUB_CMDLINE_LINUX=.*|$new_linux|" $grub_config
+
+  print_message "green" "IPv6 enabled in GRUB configuration."
+
+  # Update GRUB
+  sudo update-grub
+  print_message "blue" "GRUB configuration updated. Please reboot your system for the changes to take effect."
+}
+
+# Function to disable IPv6 using sysctl
+disable_ipv6_sysctl() {
+  print_message "yellow" "Disabling IPv6 with sysctl..."
+
+  # Disable IPv6 immediately
+  sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1
+  sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1
+
+  # Ensure the changes persist after reboot
+  echo "net.ipv6.conf.all.disable_ipv6 = 1" | sudo tee -a /etc/sysctl.conf
+  echo "net.ipv6.conf.default.disable_ipv6 = 1" | sudo tee -a /etc/sysctl.conf
+
+  # Reload sysctl settings
+  sudo sysctl -p >/dev/null 2>&1
+
+  print_message "green" "IPv6 has been disabled using sysctl."
+}
+
+# Function to enable IPv6 using sysctl
+enable_ipv6_sysctl() {
+  print_message "yellow" "Enabling IPv6 with sysctl..."
+
+  # Enable IPv6 immediately
+  sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0 >/dev/null 2>&1
+  sudo sysctl -w net.ipv6.conf.default.disable_ipv6=0 >/dev/null 2>&1
+
+  # Ensure the changes persist after reboot
+  sudo sed -i '/net.ipv6.conf.all.disable_ipv6 = 1/d' /etc/sysctl.conf
+  sudo sed -i '/net.ipv6.conf.default.disable_ipv6 = 1/d' /etc/sysctl.conf
+
+  # Reload sysctl settings
+  sudo sysctl -p >/dev/null 2>&1
+
+  print_message "green" "IPv6 has been enabled using sysctl."
+}
+
+# Function to display help
+show_help() {
+  banner
+  echo "Usage: $0 [OPTION]"
+  echo "Options:"
+  echo "  c    Connect to Tor and check for leaks using proxychains"
+  echo "  t    Test for leaks using proxychains without starting Tor"
+  echo "  tp   Test for leaks in transparent proxy mode without proxychains"
+  echo "  d    Disconnect Tor and display public IP"
+  echo "  ap   Activate transparent proxy through Tor and check for leaks without proxychains"
+  echo "  dp   Deactivate transparent proxy through Tor"
+  echo "  dg6   Disable IPV6 in grub"
+  echo "  eg6   Enable IPV6 in grub"
+  echo "  ds6   Disable IPV6 in sysctl"
+  echo "  es6   Enable IPV6 in sysctl"
+  echo "  i    Tasks using external network or tor via proxchains"
+  echo "  h    Display this help message"
+}
 
 # Main script execution
 if [ $# -eq 0 ]; then
@@ -322,6 +453,7 @@ fi
 
 case "$1" in
   c)
+    banner
     print_message "blue" "Starting Tor and checking for leaks using proxychains..."
     
     initial_ip=$(get_external_ip)
@@ -349,6 +481,7 @@ case "$1" in
     ;;
 
   t)
+    banner
     print_message "blue" "Checking for leaks using proxychains without starting Tor..."
     
     initial_ip=$(get_external_ip)
@@ -378,6 +511,7 @@ case "$1" in
     ;;
 
   d)
+    banner
     print_message "blue" "Stopping Tor and displaying public IP..."
     
     if check_tor_network_usage; then
@@ -391,6 +525,7 @@ case "$1" in
     ;;
 
   ap)
+    banner
     print_message "blue" "Activating transparent proxy through Tor and checking for leaks without proxychains..."
 
     initial_ip=$(get_external_ip)
@@ -418,6 +553,7 @@ case "$1" in
     ;;
 
   tp)
+    banner
     print_message "blue" "Checking for leaks in transparent proxy mode without proxychains..."
     
     initial_ip=$(get_external_ip)
@@ -443,6 +579,7 @@ case "$1" in
     ;;
 
   dp)
+    banner
     print_message "blue" "Deactivating transparent proxy through Tor..."
     if check_external_network_usage; then
       stop_tor_proxy
@@ -451,11 +588,37 @@ case "$1" in
     fi
     ;;
 
+  dg6)
+    banner
+    print_message "blue" "Disable IPV6 in grub"
+    disable_ipv6_grub
+    ;;
+
+  eg6)
+    banner
+    print_message "blue" "Enable IPV6 in grub"
+    enable_ipv6_grub
+    ;;
+
+  ds6)
+    banner
+    print_message "blue" "Enable IPV6 in sysctl"
+    enable_ipv6_sysctl
+    ;;
+
+  es6)
+    banner
+    print_message "blue" "Enable IPV6 in sysctl"
+    enable_ipv6_sysctl
+    ;;
+
   h)
+    banner
     show_help
     ;;
 
   i)
+    banner
     print_message "blue" "Current task using external network or tor via proxchains..."
     initial_ip=$(get_external_ip)
     print_message "yellow" "External IP address: $initial_ip"
@@ -464,6 +627,7 @@ case "$1" in
     ;;
 
   *)
+    banner
     print_message "red" "Invalid option. Use 'h' for help."
     show_help
     exit 1
