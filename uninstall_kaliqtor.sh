@@ -2,7 +2,7 @@
 
 # Variables
 SCRIPT_NAME="kaliqtor.sh"
-USER_DIR="$HOME/bin"
+USER_DIR="$HOME/.local/bin"
 SCRIPT_PATH="$USER_DIR/$SCRIPT_NAME"
 ZPROFILE="$HOME/.zprofile"
 
@@ -22,7 +22,7 @@ fi
 
 # Remove the directory from PATH in .zprofile if present
 if grep -q "$USER_DIR" $ZPROFILE; then
-  sed -i "/export PATH=\\\$PATH:$USER_DIR/d" $ZPROFILE
+  sudo sed -i "/export PATH=\\\$PATH:$USER_DIR/d" $ZPROFILE
   echo "Removed $USER_DIR from PATH in $ZPROFILE"
   echo "Please restart your terminal or run 'source $ZPROFILE' to update your PATH."
 else
