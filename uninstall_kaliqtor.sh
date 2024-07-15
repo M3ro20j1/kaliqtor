@@ -1,5 +1,17 @@
 #!/bin/zsh
 
+###############################################
+#                                             #
+#                 M3ro20j1                    #
+#                                             #
+#      GitHub: https://github.com/M3ro20j1    #
+#                                             #
+#             (C) 2024 M3ro20j1               #
+#     Licensed under GNU General Public       #
+#            License v3.0 or later            #
+#                                             #
+###############################################
+
 # Variables
 SCRIPT_NAME="kaliqtor.sh"
 USER_DIR="$HOME/.local/bin"
