@@ -26,6 +26,22 @@ The script offers two main operating modes: via proxychains and via a transparen
 **Deactivation of Transparent Proxy:**
    - **Command `dp`:** Deactivates the transparent proxy via Tor and restores the default iptables rules, allowing a return to a standard network configuration.
 
+### Functions for IPv6 Management
+
+**Disabling IPv6 via GRUB:**
+   - **Command `dg6`:** This function modifies the GRUB configuration to disable IPv6 at the system boot level. It adds the `ipv6.disable=1` parameter to the `GRUB_CMDLINE_LINUX_DEFAULT` and `GRUB_CMDLINE_LINUX` variables in `/etc/default/grub`, then updates GRUB to apply the changes. This method ensures that IPv6 is disabled from the moment the system starts, providing a more secure and persistent solution.
+
+**Enabling IPv6 via GRUB:**
+   - **Command `eg6`:** This function reverts the changes made by `disable_ipv6_grub` by removing the `ipv6.disable=1` parameter from the GRUB configuration. It ensures that IPv6 is re-enabled at the system boot level, allowing IPv6 traffic after the system restarts.
+
+**Disabling IPv6 via sysctl:**
+   - **Command `ds6`:** This function dynamically disables IPv6 at runtime using `sysctl` commands. It sets `net.ipv6.conf.all.disable_ipv6=1` and `net.ipv6.conf.default.disable_ipv6=1` to disable IPv6 immediately and adds these settings to `/etc/sysctl.conf` to ensure the changes persist after a reboot. This method provides a quick way to disable IPv6 without needing a system restart.
+
+**Enabling IPv6 via sysctl:**
+   - **Command `es6`:** This function dynamically re-enables IPv6 using `sysctl` commands. It sets `net.ipv6.conf.all.disable_ipv6=0` and `net.ipv6.conf.default.disable_ipv6=0` to enable IPv6 immediately and removes the corresponding entries from `/etc/sysctl.conf` to ensure the changes persist after a reboot. This method allows IPv6 traffic to resume without needing a system restart.
+
+By incorporating these functions, the script offers flexible and persistent control over IPv6 configuration, enhancing the ability to manage network security and privacy effectively.
+
 ### Miscellaneous Functions
 
 **Checking Applications Using External Network:**
