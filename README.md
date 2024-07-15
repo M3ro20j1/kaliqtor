@@ -1,4 +1,4 @@
-## Description of the Script kaliqtor.sh
+# Description of the Script kaliqtor.sh
 
 This Bash script is designed to manage and secure a system's network traffic by routing it through the Tor network. Although primarily intended to work on Kali Linux, it can also be used on other Linux distributions (to be tested).
 
@@ -83,3 +83,44 @@ This enables the user to customize the network configuration according to their 
 - **Color Display:** Script messages are colored for easier reading and status identification (success, failure, warning).
 
 By using this script, users can significantly improve their online security by ensuring that all their network traffic is anonymized and protected against potential leaks. This script is a powerful tool for those looking to enhance their privacy and security on the Internet.
+
+# Installation and Uninstallation Instructions for `kaliqtor.sh`
+
+The following instructions will guide you through the process of installing and uninstalling the `kaliqtor.sh` script on a Kali Linux system. These scripts will ensure that `kaliqtor.sh` is correctly downloaded, installed, and executable, and that it can be easily removed when no longer needed.
+
+### Installation Instructions
+
+To install the `kaliqtor.sh` script, execute the following command in your terminal:
+
+```bash
+curl -s https://raw.githubusercontent.com/M3ro20j1/kaliqtor/main/install_kaliqtor.sh | zsh
+```
+
+**What this command does:**
+1. **Downloads the Installation Script:** The command uses `curl` to download the `install_kaliqtor.sh` script from the GitHub repository.
+2. **Executes the Script:** The downloaded script is immediately executed using `zsh`.
+3. **Creates Directory:** The script creates a directory `~/.local/bin` if it doesn't already exist.
+4. **Downloads `kaliqtor.sh`:** The main script `kaliqtor.sh` is downloaded to `~/.local/bin`.
+5. **Makes the Script Executable:** The script is made executable.
+6. **Updates PATH:** The script adds `~/.local/bin` to your `PATH` by modifying `~/.zprofile` if it is not already included.
+7. **Sources `.zprofile`:** The script reloads `.zprofile` to apply the changes immediately.
+
+### Uninstallation Instructions
+
+To uninstall the `kaliqtor.sh` script, execute the following command in your terminal:
+
+```bash
+curl -s https://raw.githubusercontent.com/M3ro20j1/kaliqtor/main/uninstall_kaliqtor.sh | zsh
+```
+
+**What this command does:**
+1. **Downloads the Uninstallation Script:** The command uses `curl` to download the `uninstall_kaliqtor.sh` script from the GitHub repository.
+2. **Executes the Script:** The downloaded script is immediately executed using `zsh`.
+3. **Removes `kaliqtor.sh`:** The script removes the `kaliqtor.sh` script from `~/.local/bin`.
+4. **Removes Directory:** If the `~/.local/bin` directory is empty after the script removal, the directory is also removed.
+5. **Updates PATH:** The script removes `~/.local/bin` from your `PATH` by modifying `~/.zprofile` if it was previously added.
+6. **Sources `.zprofile`:** The script reloads `.zprofile` to apply the changes immediately.
+
+### Summary
+
+These commands provide a simple and efficient way to manage the `kaliqtor.sh` script on your Kali Linux system. The installation script ensures that the script is correctly placed and executable, while the uninstallation script cleans up all associated files and path entries. This approach keeps your environment tidy and ensures that you can easily switch between using and not using the `kaliqtor.sh` script.
